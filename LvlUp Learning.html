@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LvlUp Pro | Unblocked Game Portal</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand: #6366f1;
+            --brand-dim: rgba(99,102,241,0.15);
+            --brand-glow: rgba(99,102,241,0.35);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warn: #f59e0b;
+            --bg: #080c17;
+            --bg2: #0d1120;
+            --surface: #111827;
+            --surface2: #1a2235;
+            --surface3: #1f2c42;
+            --text: #f1f5f9;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --border: rgba(255,255,255,0.07);
+            --border2: rgba(99,102,241,0.25);
+            --radius: 14px;
+            --radius-lg: 22px;
+            --radius-xl: 30px;
+            --sidebar: 270px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ─── SCANLINE OVERLAY ─── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ─── AUTH OVERLAY ─── */
+        #authOverlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100000;
+        }
+
+        .auth-panel {
+            background: var(--surface);
+            padding: 48px;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border2);
+            width: 420px;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(99,102,241,0.12), 0 40px 80px rgba(0,0,0,0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-panel::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--brand-glow), transparent 70%);
+            pointer-events: none;
+        }
+
+        .auth-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--brand);
+            letter-spacing: -1px;
+            margin-bottom: 6px;
+        }
+
+        .auth-sub {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 32px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg2);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input:focus { border-color: var(--brand); }
+        .auth-input::placeholder { color: var(--text-muted); }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--brand);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Syne', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            background: #4f52e0;
+            box-shadow: 0 0 20px var(--brand-glow);
+            transform: translateY(-1px);
+        }
+
+        #v-box { display: none; margin-top: 20px; }
+
+        .code-display {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 28px;
+            letter-spacing: 8px;
+            color: var(--brand);
+            padding: 16px;
+            background: var(--bg2);
+            border-radius: 10px;
+            border: 1px solid var(--border2);
+            margin-bottom: 12px;
+        }
+
+        /* ─── SIDEBAR ─── */
+        .sidebar {
+            width: var(--sidebar);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 28px 18px;
+            position: fixed;
+            height: 100vh;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--brand);
+            margin-bottom: 28px;
+            padding: 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-logo::before {
+            content: '⬡';
+            font-size: 22px;
+        }
+
+        .sidebar-section {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            padding: 16px 10px 6px;
+            text-transform: uppercase;
+        }
+
+        .nav-item {
+            padding: 11px 14px;
+            border-radius: 10px;
+            color: var(--text-dim);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item:hover { color: var(--text); background: var(--surface2); }
+        .nav-item.active { background: var(--brand-dim); color: white; border-color: var(--border2); }
+        .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+        .nav-item-game {
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: var(--text-dim);
+            font-size: 12.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item-game:hover { background: var(--surface2); color: var(--text); }
+        .nav-item-game .game-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; }
+        .nav-item-game.featured .game-dot { background: var(--brand); box-shadow: 0 0 6px var(--brand); }
+        .nav-item-game.danger .game-dot { background: var(--danger); }
+
+        .sidebar-bottom { margin-top: auto; }
+
+        .xp-bar-container {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+
+        .xp-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .xp-label span { color: var(--success); font-size: 13px; }
+
+        .xp-track {
+            height: 4px;
+            background: var(--surface3);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--brand), var(--success));
+            border-radius: 99px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .btn-reset {
+            width: 100%;
+            padding: 11px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover { border-color: var(--danger); color: var(--danger); }
+
+        /* ─── MAIN VIEWPORT ─── */
+        .viewport {
+            margin-left: var(--sidebar);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            height: 64px;
+            padding: 0 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topbar-left span {
+            color: var(--brand);
+            font-size: 16px;
+        }
+
+        .topbar-pills { display: flex; gap: 10px; }
+
+        .pill {
+            padding: 6px 14px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); }
+        .pill .xp-val { color: var(--success); }
+
+        /* ─── CONTENT AREA ─── */
+        .content-area {
+            padding: 36px;
+            flex: 1;
+        }
+
+        /* ─── GAME STAGE ─── */
+        .stage-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 36px;
+        }
+
+        #canvas-wrapper, #video-wrapper {
+            position: relative;
+            width: 820px;
+            height: 510px;
+            background: #000;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border2);
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(99,102,241,0.1), 0 20px 60px rgba(0,0,0,0.8), 0 0 80px rgba(99,102,241,0.06);
+        }
+
+        #video-wrapper { display: none; }
+
+        iframe { width: 100%; height: 100%; border: none; }
+        canvas { display: block; width: 820px; height: 510px; cursor: crosshair; }
+
+        .game-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(8,12,23,0.97), rgba(17,24,39,0.95));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .overlay-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--brand);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .overlay-headline {
+            font-family: 'Syne', sans-serif;
+            font-size: 38px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 32px;
+            text-align: center;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .game-grid-overlay {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .game-grid-section {
+            grid-column: span 2;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            padding: 6px 0 2px;
+        }
+
+        .btn-game {
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-game-core {
+            background: var(--brand-dim);
+            border-color: var(--border2);
+            color: white;
+        }
+
+        .btn-game-core:hover {
+            background: var(--brand);
+            box-shadow: 0 0 20px var(--brand-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-game-core.red {
+            background: rgba(239,68,68,0.12);
+            border-color: rgba(239,68,68,0.25);
+        }
+
+        .btn-game-core.red:hover {
+            background: var(--danger);
+            box-shadow: 0 0 20px rgba(239,68,68,0.4);
+        }
+
+        .btn-game-legacy {
+            background: var(--surface);
+            border-color: var(--border);
+            color: var(--text-dim);
+        }
+
+        .btn-game-legacy:hover {
+            background: var(--surface2);
+            border-color: var(--border2);
+            color: var(--text);
+        }
+
+        .btn-game-icon { font-size: 18px; }
+
+        /* ─── GAME LIBRARY GRID (bottom) ─── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .section-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            padding: 4px 10px;
+            background: var(--surface);
+            border-radius: 99px;
+            border: 1px solid var(--border);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 14px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.22s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+        }
+
+        .card-thumb {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-thumb::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5));
+        }
+
+        .card-body {
+            padding: 12px 14px;
+            flex: 1;
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-xp {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-internal { background: var(--brand-dim); color: var(--brand); border: 1px solid var(--border2); }
+        .badge-remote { background: rgba(245,158,11,0.12); color: var(--warn); border: 1px solid rgba(245,158,11,0.25); }
+
+        /* ─── MEDIA TAB ─── */
+        #video-wrapper iframe { border-radius: 0; }
+
+        /* ─── SCROLLBAR ─── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--brand); }
+
+        /* ─── TOAST ─── */
+        #toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--success);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 99999;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+
+        #toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ─── MEDIA PLAYER LAYOUT ─── */
+        .media-info {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .media-info h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .media-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .media-tracks {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .track-pill {
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dim);
+        }
+
+        .track-pill:hover, .track-pill.active {
+            background: var(--brand-dim);
+            border-color: var(--border2);
+            color: white;
+        }
+    </style>
+</head>
+<body onload="initPortal()">
+
+    <!-- AUTH OVERLAY -->
+    <div id="authOverlay">
+        <div class="auth-panel">
+            <div class="auth-logo">LVLUP PRO</div>
+            <div class="auth-sub" id="auth-sub-text">Unblocked Game Portal</div>
+
+            <!-- TAB SWITCHER -->
+            <div style="display:flex; gap:8px; margin-bottom:24px;">
+                <button id="tab-login-btn" onclick="showAuthTab('login')" style="flex:1; padding:10px; border-radius:8px; border:1px solid var(--border2); background:var(--brand); color:white; font-family:'Syne',sans-serif; font-weight:700; font-size:13px; cursor:pointer;">Login</button>
+                <button id="tab-signup-btn" onclick="showAuthTab('signup')" style="flex:1; padding:10px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-family:'Syne',sans-serif; font-weight:700; font-size:13px; cursor:pointer;">Sign Up</button>
+            </div>
+
+            <!-- LOGIN PANEL -->
+            <div id="login-panel">
+                <input type="text" id="login-user" class="auth-input" placeholder="Gamer Tag">
+                <input type="password" id="login-pass" class="auth-input" placeholder="Password">
+                <div id="login-error" style="color:var(--danger); font-size:12px; margin-bottom:10px; display:none;"></div>
+                <button class="btn-primary" onclick="doLogin()">Login</button>
+            </div>
+
+            <!-- SIGNUP PANEL -->
+            <div id="signup-panel" style="display:none;">
+                <!-- Step 1: details -->
+                <div id="signup-step1">
+                    <input type="text" id="reg-user" class="auth-input" placeholder="Gamer Tag">
+                    <input type="email" id="reg-email" class="auth-input" placeholder="Email Address">
+                    <input type="password" id="reg-pass" class="auth-input" placeholder="Password">
+                    <input type="password" id="reg-pass2" class="auth-input" placeholder="Confirm Password">
+                    <div id="signup-error" style="color:var(--danger); font-size:12px; margin-bottom:10px; display:none;"></div>
+                    <button class="btn-primary" onclick="startSignup()">Send Verification Code</button>
+                </div>
+                <!-- Step 2: verify -->
+                <div id="signup-step2" style="display:none;">
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">A code was sent to your email:</p>
+                    <div class="code-display" id="temp-code"></div>
+                    <input type="text" id="v-input" class="auth-input" placeholder="Enter Code" style="text-align:center; letter-spacing:4px; margin-top:12px;">
+                    <div id="verify-error" style="color:var(--danger); font-size:12px; margin-bottom:10px; display:none;"></div>
+                    <button class="btn-primary" onclick="finalizeSignup()">Create Account</button>
+                    <button onclick="showAuthTab('signup')" style="width:100%; margin-top:8px; padding:10px; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--text-muted); font-size:12px; cursor:pointer;">← Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">LVLUP PRO</div>
+
+        <div class="nav-item active" id="tab-arcade" onclick="switchTab('arcade')">
+            <span class="nav-icon">🎮</span> Arcade
+        </div>
+        <div class="nav-item" id="tab-media" onclick="switchTab('media')">
+            <span class="nav-icon">🎵</span> Music &amp; Media
+        </div>
+
+        <div class="sidebar-section">Core Games</div>
+        <div class="nav-item-game featured" onclick="loadGameFromLib('dodger')">
+            <div class="game-dot"></div> Neon Dodger
+        </div>
+        <div class="nav-item-game danger" onclick="loadGameFromLib('zombie')">
+            <div class="game-dot"></div> Dead Zone
+        </div>
+        <div class="nav-item-game featured" onclick="loadGameFromLib('snake')">
+            <div class="game-dot"></div> Neon Snake
+        </div>
+        <div class="nav-item-game danger" onclick="loadGameFromLib('warzone')">
+            <div class="game-dot"></div> Void Warzone
+        </div>
+
+
+
+        <div class="sidebar-bottom">
+            <div class="xp-bar-container">
+                <div class="xp-label">
+                    TOTAL XP <span id="xp-counter">0</span>
+                </div>
+                <div class="xp-track">
+                    <div class="xp-fill" id="xp-fill"></div>
+                </div>
+            </div>
+            <button class="btn-reset" onclick="localStorage.clear(); location.reload();">↺ Reset System</button>
+        </div>
+    </aside>
+
+    <!-- MAIN VIEWPORT -->
+    <div class="viewport">
+        <nav class="topbar">
+            <div class="topbar-left">
+                MODULE / <span id="active-title">ARCADE</span>
+            </div>
+            <div class="topbar-pills">
+                <div class="pill"><div class="dot"></div> System Online</div>
+                <div class="pill">XP <span class="xp-val" id="xp-pill">0</span></div>
+            </div>
+        </nav>
+
+        <div class="content-area">
+            <!-- ARCADE TAB -->
+            <div id="arcade-view">
+                <div class="stage-wrapper">
+                    <div id="canvas-wrapper">
+                        <div id="game-ui" class="game-overlay">
+                            <div class="overlay-title">System Ready</div>
+                            <div class="overlay-headline">Select a Game</div>
+                            <div class="game-grid-overlay">
+                                <div class="game-grid-section">⬡ Core Modules</div>
+                                <button class="btn-game btn-game-core" onclick="loadGameFromLib('dodger')">
+                                    <span class="btn-game-icon">🔷</span> Neon Dodger
+                                </button>
+                                <button class="btn-game btn-game-core red" onclick="loadGameFromLib('zombie')">
+                                    <span class="btn-game-icon">🧟</span> Dead Zone
+                                </button>
+                                <button class="btn-game btn-game-core" onclick="loadGameFromLib('snake')" style="grid-column:span 2;">
+                                    <span class="btn-game-icon">🐍</span> Neon Snake
+                                </button>
+                                <button class="btn-game btn-game-core" onclick="loadGameFromLib('warzone')" style="grid-column:span 2; background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.3);">
+                                    <span class="btn-game-icon">🎯</span> Void Warzone
+                                </button>
+
+                            </div>
+                        </div>
+                        <canvas id="mainCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>Game Library</h2>
+                    <div class="section-tag">4 GAMES</div>
+                </div>
+
+                <div class="card-grid">
+                    <div class="game-card" onclick="loadGameFromLib('dodger')">
+                        <div class="card-thumb" style="background: linear-gradient(135deg, #1e1b4b, #312e81);">🔷</div>
+                        <div class="card-body">
+                            <div class="card-title">Neon Dodger</div>
+                            <div class="card-meta">
+                                <span class="badge badge-internal">INTERNAL</span>
+                                <span class="card-xp">+10 XP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-card" onclick="loadGameFromLib('zombie')">
+                        <div class="card-thumb" style="background: linear-gradient(135deg, #1f0000, #4c0000);">🧟</div>
+                        <div class="card-body">
+                            <div class="card-title">Dead Zone</div>
+                            <div class="card-meta">
+                                <span class="badge badge-internal">INTERNAL</span>
+                                <span class="card-xp">+5 XP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-card" onclick="loadGameFromLib('snake')">
+                        <div class="card-thumb" style="background: linear-gradient(135deg, #052e16, #14532d);">🐍</div>
+                        <div class="card-body">
+                            <div class="card-title">Neon Snake</div>
+                            <div class="card-meta">
+                                <span class="badge badge-internal">INTERNAL</span>
+                                <span class="card-xp">+8 XP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="game-card" onclick="loadGameFromLib('warzone')">
+                        <div class="card-thumb" style="background: linear-gradient(135deg, #1c0505, #450a0a);">🎯</div>
+                        <div class="card-body">
+                            <div class="card-title">Void Warzone</div>
+                            <div class="card-meta">
+                                <span class="badge badge-internal">INTERNAL</span>
+                                <span class="card-xp">+12 XP</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MEDIA TAB -->
+            <div id="media-view" style="display:none;">
+                <div class="stage-wrapper" style="flex-direction:column; align-items:center;">
+                    <div id="video-wrapper" style="display:block;">
+                        <iframe id="yt-player" src="https://www.youtube.com/embed/jfKfPfyJRdk" allowfullscreen></iframe>
+                    </div>
+                    <div class="media-info">
+                        <h3>Lofi Hip Hop Radio</h3>
+                        <p>Beats to relax / study to · Live Stream</p>
+                        <div class="media-tracks">
+                            <div class="track-pill active" onclick="setTrack('jfKfPfyJRdk', this)">📻 Lofi Radio</div>
+                            <div class="track-pill" onclick="setTrack('4xDzrJKXOOY', this)">🌙 Chillhop</div>
+                            <div class="track-pill" onclick="setTrack('5qap5aO4i9A', this)">☕ Lofi Café</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast"></div>
+
+    <!-- GAMES LIBRARY (inline) -->
+    <script>
+    const GamesLib = {
+        dodger: {
+            title: "NEON DODGER",
+            type: "internal",
+            xpMultiplier: 10,
+            init: function(canvas, ctx, onGameOver) {
+                let running = true;
+                let score = 0;
+                let player = { x: 400, y: 250, r: 15, speed: 7 };
+                let enemies = [];
+                const keys = {};
+
+                window.onkeydown = e => keys[e.code] = true;
+                window.onkeyup = e => keys[e.code] = false;
+
+                function update() {
+                    if(!running) return;
+                    ctx.fillStyle = 'rgba(11, 15, 26, 0.2)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    if ((keys['KeyW'] || keys['ArrowUp']) && player.y > player.r) player.y -= player.speed;
+                    if ((keys['KeyS'] || keys['ArrowDown']) && player.y < canvas.height - player.r) player.y += player.speed;
+                    if ((keys['KeyA'] || keys['ArrowLeft']) && player.x > player.r) player.x -= player.speed;
+                    if ((keys['KeyD'] || keys['ArrowRight']) && player.x < canvas.width - player.r) player.x += player.speed;
+
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = '#6366f1';
+                    ctx.fillStyle = '#6366f1';
+                    ctx.beginPath();
+                    ctx.arc(player.x, player.y, player.r, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+
+                    if(Math.random() < 0.04) {
+                        enemies.push({ x: Math.random() * canvas.width, y: -20, s: 20, spd: 4 + Math.random() * 4 });
+                    }
+
+                    enemies.forEach((en, i) => {
+                        en.y += en.spd;
+                        ctx.fillStyle = '#ef4444';
+                        ctx.fillRect(en.x, en.y, en.s, en.s);
+                        let dx = player.x - (en.x + en.s/2);
+                        let dy = player.y - (en.y + en.s/2);
+                        if(Math.sqrt(dx*dx + dy*dy) < player.r + en.s/2) {
+                            running = false;
+                            onGameOver(score);
+                        }
+                        if(en.y > canvas.height) { enemies.splice(i, 1); score++; }
+                    });
+
+                    ctx.fillStyle = "white";
+                    ctx.font = "bold 18px 'Share Tech Mono'";
+                    ctx.fillText(`SCORE: ${score}`, 20, 34);
+
+                    if(running) requestAnimationFrame(update);
+                }
+                update();
+            }
+        },
+
+        zombie: {
+            title: "DEAD ZONE",
+            type: "internal",
+            xpMultiplier: 5,
+            init: function(canvas, ctx, onGameOver) {
+                const arena = canvas.parentElement;
+                let state = {
+                    hp: 100, score: 0, wave: 1, active: true,
+                    player: { x: 50, y: 50 }, zombies: [], keys: {}
+                };
+
+                if(!document.getElementById('z-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'z-styles';
+                    style.textContent = `
+                        .z-mob { position: absolute; width: 32px; height: 32px; background: #116622; border: 1px solid #22cc44; border-radius: 4px; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; z-index: 5; font-size: 16px; pointer-events:none; }
+                        .z-player { position: absolute; width: 36px; height: 36px; background: #3399ff; border-radius: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; z-index: 10; font-size: 18px; pointer-events:none; }
+                        .z-hit { background: #cc2200 !important; box-shadow: 0 0 20px #cc2200; }
+                    `;
+                    document.head.appendChild(style);
+                }
+
+                const pEl = document.createElement('div');
+                pEl.className = "z-player"; pEl.innerHTML = "🧑";
+                arena.appendChild(pEl);
+
+                const handleDown = (e) => state.keys[e.code] = true;
+                const handleUp = (e) => state.keys[e.code] = false;
+                window.addEventListener('keydown', handleDown);
+                window.addEventListener('keyup', handleUp);
+
+                canvas.onclick = (e) => {
+                    if(!state.active) return;
+                    const rect = canvas.getBoundingClientRect();
+                    const cx = ((e.clientX - rect.left) / rect.width) * 100;
+                    const cy = ((e.clientY - rect.top) / rect.height) * 100;
+                    state.zombies.forEach((z, i) => {
+                        if (Math.hypot(z.x - cx, z.y - cy) < 8) {
+                            z.el.remove();
+                            state.zombies.splice(i, 1);
+                            state.score += 10;
+                        }
+                    });
+                };
+
+                function spawn() {
+                    if (!state.active) return;
+                    const side = Math.floor(Math.random() * 4);
+                    let x, y;
+                    if (side === 0) { x = Math.random() * 100; y = -5; }
+                    else if (side === 1) { x = 105; y = Math.random() * 100; }
+                    else if (side === 2) { x = Math.random() * 100; y = 105; }
+                    else { x = -5; y = Math.random() * 100; }
+                    const el = document.createElement('div');
+                    el.className = "z-mob"; el.innerHTML = "🧟";
+                    arena.appendChild(el);
+                    state.zombies.push({ el, x, y, speed: 0.15 + (state.wave * 0.05) });
+                    setTimeout(spawn, Math.max(400, 1800 - (state.wave * 150)));
+                }
+
+                function loop() {
+                    if (!state.active) return;
+                    ctx.fillStyle = "#0e0e0e";
+                    ctx.fillRect(0,0, canvas.width, canvas.height);
+                    const pSpd = 0.8;
+                    if (state.keys['KeyW']) state.player.y = Math.max(2, state.player.y - pSpd);
+                    if (state.keys['KeyS']) state.player.y = Math.min(98, state.player.y + pSpd);
+                    if (state.keys['KeyA']) state.player.x = Math.max(2, state.player.x - pSpd);
+                    if (state.keys['KeyD']) state.player.x = Math.min(98, state.player.x + pSpd);
+                    pEl.style.left = state.player.x + "%";
+                    pEl.style.top = state.player.y + "%";
+                    state.zombies.forEach(z => {
+                        const angle = Math.atan2(state.player.y - z.y, state.player.x - z.x);
+                        z.x += Math.cos(angle) * z.speed;
+                        z.y += Math.sin(angle) * z.speed;
+                        z.el.style.left = z.x + "%";
+                        z.el.style.top = z.y + "%";
+                        if (Math.hypot(state.player.x - z.x, state.player.y - z.y) < 4) {
+                            state.hp -= 0.4;
+                            pEl.classList.add('z-hit');
+                            setTimeout(() => pEl.classList.remove('z-hit'), 50);
+                        }
+                    });
+                    ctx.fillStyle = "white";
+                    ctx.font = "bold 18px 'Share Tech Mono'";
+                    ctx.fillText(`STABILITY: ${Math.ceil(state.hp)}%`, 20, 40);
+                    ctx.fillText(`KILLS: ${state.score / 10}`, 20, 68);
+                    if (state.hp <= 0) {
+                        state.active = false;
+                        pEl.remove();
+                        state.zombies.forEach(z => z.el.remove());
+                        window.removeEventListener('keydown', handleDown);
+                        window.removeEventListener('keyup', handleUp);
+                        onGameOver(state.score);
+                    } else {
+                        requestAnimationFrame(loop);
+                    }
+                }
+                spawn();
+                loop();
+            }
+        },
+
+        snake: {
+            title: "NEON SNAKE",
+            type: "internal",
+            xpMultiplier: 8,
+            init: function(canvas, ctx, onGameOver) {
+                const CELL = 20;
+                const COLS = canvas.width / CELL;
+                const ROWS = canvas.height / CELL;
+
+                let snake = [{ x: 10, y: 12 }, { x: 9, y: 12 }, { x: 8, y: 12 }];
+                let dir = { x: 1, y: 0 };
+                let nextDir = { x: 1, y: 0 };
+                let food = spawnFood();
+                let score = 0;
+                let running = true;
+                let frameCount = 0;
+
+                function spawnFood() {
+                    let pos;
+                    do {
+                        pos = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
+                    } while (snake.some(s => s.x === pos.x && s.y === pos.y));
+                    return pos;
+                }
+
+                const handleKey = (e) => {
+                    if (!running) return;
+                    if ((e.code === 'ArrowUp' || e.code === 'KeyW') && dir.y !== 1) nextDir = { x: 0, y: -1 };
+                    if ((e.code === 'ArrowDown' || e.code === 'KeyS') && dir.y !== -1) nextDir = { x: 0, y: 1 };
+                    if ((e.code === 'ArrowLeft' || e.code === 'KeyA') && dir.x !== 1) nextDir = { x: -1, y: 0 };
+                    if ((e.code === 'ArrowRight' || e.code === 'KeyD') && dir.x !== -1) nextDir = { x: 1, y: 0 };
+                };
+                window.addEventListener('keydown', handleKey);
+
+                function drawGrid() {
+                    ctx.fillStyle = '#080c17';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.strokeStyle = 'rgba(99,102,241,0.04)';
+                    ctx.lineWidth = 1;
+                    for (let x = 0; x <= canvas.width; x += CELL) {
+                        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+                    }
+                    for (let y = 0; y <= canvas.height; y += CELL) {
+                        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+                    }
+                }
+
+                function drawFood() {
+                    const fx = food.x * CELL + CELL / 2;
+                    const fy = food.y * CELL + CELL / 2;
+                    const pulse = 0.7 + 0.3 * Math.sin(frameCount * 0.15);
+                    ctx.shadowBlur = 20 * pulse;
+                    ctx.shadowColor = '#ef4444';
+                    ctx.fillStyle = '#ef4444';
+                    ctx.beginPath();
+                    ctx.arc(fx, fy, (CELL / 2 - 3) * pulse, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+
+                function roundRect(ctx, x, y, w, h, r) {
+                    ctx.beginPath();
+                    ctx.moveTo(x + r, y);
+                    ctx.lineTo(x + w - r, y);
+                    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                    ctx.lineTo(x + w, y + h - r);
+                    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                    ctx.lineTo(x + r, y + h);
+                    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                    ctx.lineTo(x, y + r);
+                    ctx.quadraticCurveTo(x, y, x + r, y);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                function drawSnake() {
+                    snake.forEach((seg, i) => {
+                        const isHead = i === 0;
+                        const t = 1 - (i / snake.length) * 0.6;
+                        const r = Math.floor(99 * t);
+                        const g = Math.floor(102 * t);
+                        const b = Math.floor(241 * t);
+                        const pad = isHead ? 1 : 3;
+                        const cornerR = isHead ? 6 : 4;
+                        ctx.shadowBlur = isHead ? 18 : 8;
+                        ctx.shadowColor = `rgba(${r},${g},${b},0.8)`;
+                        ctx.fillStyle = isHead ? '#a5b4fc' : `rgb(${r},${g},${b})`;
+                        roundRect(ctx, seg.x * CELL + pad, seg.y * CELL + pad, CELL - pad * 2, CELL - pad * 2, cornerR);
+                        ctx.shadowBlur = 0;
+                        if (isHead) {
+                            ctx.fillStyle = '#080c17';
+                            const ex = dir.x, ey = dir.y;
+                            const cx = seg.x * CELL + CELL / 2;
+                            const cy = seg.y * CELL + CELL / 2;
+                            const offPerp = 4, offFwd = 4;
+                            const e1x = cx + ey * offPerp + ex * offFwd;
+                            const e1y = cy - ex * offPerp + ey * offFwd;
+                            const e2x = cx - ey * offPerp + ex * offFwd;
+                            const e2y = cy + ex * offPerp + ey * offFwd;
+                            ctx.beginPath(); ctx.arc(e1x, e1y, 2, 0, Math.PI * 2); ctx.fill();
+                            ctx.beginPath(); ctx.arc(e2x, e2y, 2, 0, Math.PI * 2); ctx.fill();
+                        }
+                    });
+                }
+
+                function drawHUD() {
+                    ctx.fillStyle = 'rgba(8,12,23,0.7)';
+                    ctx.fillRect(0, 0, canvas.width, 36);
+                    ctx.fillStyle = '#f1f5f9';
+                    ctx.font = "bold 14px 'Share Tech Mono'";
+                    ctx.fillText(`SCORE: ${score}`, 16, 23);
+                    ctx.fillStyle = '#6366f1';
+                    ctx.fillText(`LENGTH: ${snake.length}`, 160, 23);
+                    const lvl = Math.floor(score / 5) + 1;
+                    ctx.fillStyle = '#10b981';
+                    ctx.fillText(`LVL: ${lvl}`, 320, 23);
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = "12px 'Share Tech Mono'";
+                    ctx.fillText('WASD / ARROWS', canvas.width - 170, 23);
+                }
+
+                function loop() {
+                    if (!running) return;
+                    frameCount++;
+                    const currentSpeed = Math.max(4, 8 - Math.floor(score / 5));
+                    if (frameCount % currentSpeed === 0) {
+                        dir = { ...nextDir };
+                        const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+                        if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
+                            running = false;
+                            window.removeEventListener('keydown', handleKey);
+                            onGameOver(score);
+                            return;
+                        }
+                        if (snake.some(s => s.x === head.x && s.y === head.y)) {
+                            running = false;
+                            window.removeEventListener('keydown', handleKey);
+                            onGameOver(score);
+                            return;
+                        }
+                        snake.unshift(head);
+                        if (head.x === food.x && head.y === food.y) {
+                            score++;
+                            food = spawnFood();
+                        } else {
+                            snake.pop();
+                        }
+                    }
+                    drawGrid();
+                    drawFood();
+                    drawSnake();
+                    drawHUD();
+                    requestAnimationFrame(loop);
+                }
+                loop();
+            }
+        },
+
+        warzone: {
+            title: "VOID WARZONE",
+            type: "internal",
+            xpMultiplier: 12,
+            init: function(canvas, ctx, onGameOver) {
+                let running = true;
+                let score = 0;
+                let wave = 1;
+                let frameCount = 0;
+                let waveSpawned = 0;
+                let waveTotal = 6;
+                let betweenWaves = false;
+                let betweenTimer = 0;
+
+                const player = {
+                    x: canvas.width / 2, y: canvas.height / 2,
+                    r: 14, speed: 3.5, hp: 100, maxHp: 100,
+                    angle: 0, fireRate: 12, fireCooldown: 0,
+                    invincible: 0
+                };
+
+                let bullets = [];
+                let enemies = [];
+                let particles = [];
+                const keys = {};
+                let mouseX = canvas.width / 2, mouseY = canvas.height / 2;
+
+                const handleKey = e => keys[e.code] = true;
+                const handleKeyUp = e => keys[e.code] = false;
+                const handleMove = e => {
+                    const rect = canvas.getBoundingClientRect();
+                    mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                    mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                };
+                const handleClick = e => {
+                    if (!running) return;
+                    shoot();
+                };
+
+                window.addEventListener('keydown', handleKey);
+                window.addEventListener('keyup', handleKeyUp);
+                canvas.addEventListener('mousemove', handleMove);
+                canvas.addEventListener('click', handleClick);
+
+                function cleanup() {
+                    window.removeEventListener('keydown', handleKey);
+                    window.removeEventListener('keyup', handleKeyUp);
+                    canvas.removeEventListener('mousemove', handleMove);
+                    canvas.removeEventListener('click', handleClick);
+                }
+
+                function shoot() {
+                    if (player.fireCooldown > 0) return;
+                    const angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+                    bullets.push({
+                        x: player.x + Math.cos(angle) * 20,
+                        y: player.y + Math.sin(angle) * 20,
+                        vx: Math.cos(angle) * 9,
+                        vy: Math.sin(angle) * 9,
+                        r: 4, life: 80
+                    });
+                    player.fireCooldown = player.fireRate;
+                    // Muzzle flash particle
+                    for (let i = 0; i < 5; i++) {
+                        const a = angle + (Math.random() - 0.5) * 0.6;
+                        particles.push({ x: player.x + Math.cos(angle)*20, y: player.y + Math.sin(angle)*20, vx: Math.cos(a)*3, vy: Math.sin(a)*3, life: 12, color: '#a5b4fc', r: 2 });
+                    }
+                }
+
+                const ENEMY_TYPES = {
+                    basic:  { r: 13, speed: 1.2, hp: 1, color: '#ef4444', glow: '#ef4444', score: 1 },
+                    fast:   { r: 9,  speed: 2.4, hp: 1, color: '#f59e0b', glow: '#f59e0b', score: 2 },
+                    tank:   { r: 20, speed: 0.7, hp: 4, color: '#10b981', glow: '#10b981', score: 5 },
+                    drone:  { r: 11, speed: 1.8, hp: 2, color: '#8b5cf6', glow: '#c4b5fd', score: 3 }
+                };
+
+                function spawnEnemy() {
+                    const side = Math.floor(Math.random() * 4);
+                    let x, y;
+                    const pad = 30;
+                    if (side === 0) { x = Math.random() * canvas.width; y = -pad; }
+                    else if (side === 1) { x = canvas.width + pad; y = Math.random() * canvas.height; }
+                    else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height + pad; }
+                    else { x = -pad; y = Math.random() * canvas.height; }
+
+                    let type = 'basic';
+                    const r = Math.random();
+                    if (wave >= 3 && r < 0.15) type = 'tank';
+                    else if (wave >= 2 && r < 0.35) type = 'fast';
+                    else if (wave >= 4 && r < 0.5) type = 'drone';
+
+                    const t = ENEMY_TYPES[type];
+                    enemies.push({ x, y, r: t.r, speed: t.speed + wave * 0.08, hp: t.hp, maxHp: t.hp, color: t.color, glow: t.glow, score: t.score, type, angle: 0 });
+                    waveSpawned++;
+                }
+
+                function spawnParticles(x, y, color, count) {
+                    for (let i = 0; i < count; i++) {
+                        const a = Math.random() * Math.PI * 2;
+                        const spd = 1 + Math.random() * 4;
+                        particles.push({ x, y, vx: Math.cos(a)*spd, vy: Math.sin(a)*spd, life: 20 + Math.random()*20, color, r: 2 + Math.random()*3 });
+                    }
+                }
+
+                function drawBg() {
+                    ctx.fillStyle = '#06080f';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    // Grid
+                    ctx.strokeStyle = 'rgba(99,102,241,0.05)';
+                    ctx.lineWidth = 1;
+                    const gs = 40;
+                    for (let x = 0; x < canvas.width; x += gs) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
+                    for (let y = 0; y < canvas.height; y += gs) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
+                }
+
+                function drawPlayer() {
+                    player.angle = Math.atan2(mouseY - player.y, mouseX - player.x);
+                    ctx.save();
+                    ctx.translate(player.x, player.y);
+                    ctx.rotate(player.angle);
+
+                    // Body
+                    const flash = player.invincible > 0 && Math.floor(player.invincible / 3) % 2 === 0;
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = '#6366f1';
+                    ctx.fillStyle = flash ? '#fff' : '#6366f1';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, player.r, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Gun barrel
+                    ctx.fillStyle = '#a5b4fc';
+                    ctx.fillRect(6, -3, 14, 6);
+
+                    // Cockpit dot
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.shadowBlur = 0;
+                    ctx.restore();
+                }
+
+                function drawEnemies() {
+                    enemies.forEach(en => {
+                        ctx.save();
+                        ctx.translate(en.x, en.y);
+                        en.angle = Math.atan2(player.y - en.y, player.x - en.x);
+                        ctx.rotate(en.angle);
+                        ctx.shadowBlur = 15;
+                        ctx.shadowColor = en.glow;
+                        ctx.fillStyle = en.color;
+
+                        if (en.type === 'tank') {
+                            // Draw tank shape
+                            ctx.fillRect(-en.r, -en.r * 0.7, en.r * 2, en.r * 1.4);
+                            ctx.fillStyle = '#064e3b';
+                            ctx.fillRect(0, -4, en.r + 6, 8);
+                        } else if (en.type === 'drone') {
+                            ctx.beginPath();
+                            ctx.moveTo(en.r, 0);
+                            ctx.lineTo(-en.r * 0.6, -en.r * 0.8);
+                            ctx.lineTo(-en.r * 0.3, 0);
+                            ctx.lineTo(-en.r * 0.6, en.r * 0.8);
+                            ctx.closePath();
+                            ctx.fill();
+                        } else {
+                            ctx.beginPath();
+                            ctx.arc(0, 0, en.r, 0, Math.PI * 2);
+                            ctx.fill();
+                            // Inner marker
+                            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                            ctx.beginPath();
+                            ctx.arc(0, 0, en.r * 0.4, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+
+                        ctx.shadowBlur = 0;
+                        ctx.restore();
+
+                        // HP bar for tanks
+                        if (en.maxHp > 1) {
+                            const bw = en.r * 2.5;
+                            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                            ctx.fillRect(en.x - bw/2, en.y - en.r - 10, bw, 4);
+                            ctx.fillStyle = en.color;
+                            ctx.fillRect(en.x - bw/2, en.y - en.r - 10, bw * (en.hp / en.maxHp), 4);
+                        }
+                    });
+                }
+
+                function drawBullets() {
+                    bullets.forEach(b => {
+                        ctx.shadowBlur = 12;
+                        ctx.shadowColor = '#a5b4fc';
+                        ctx.fillStyle = '#e0e7ff';
+                        ctx.beginPath();
+                        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    });
+                }
+
+                function drawParticles() {
+                    particles.forEach(p => {
+                        ctx.globalAlpha = p.life / 40;
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    ctx.globalAlpha = 1;
+                }
+
+                function drawHUD() {
+                    // Top bar bg
+                    ctx.fillStyle = 'rgba(6,8,15,0.8)';
+                    ctx.fillRect(0, 0, canvas.width, 44);
+
+                    // HP bar
+                    const hpW = 180;
+                    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                    ctx.fillRect(16, 12, hpW, 14);
+                    const hpColor = player.hp > 50 ? '#10b981' : player.hp > 25 ? '#f59e0b' : '#ef4444';
+                    ctx.fillStyle = hpColor;
+                    ctx.fillRect(16, 12, hpW * (player.hp / player.maxHp), 14);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = "bold 10px 'Share Tech Mono'";
+                    ctx.fillText(`HP ${Math.ceil(player.hp)}`, 20, 23);
+
+                    ctx.fillStyle = '#f1f5f9';
+                    ctx.font = "bold 14px 'Share Tech Mono'";
+                    ctx.fillText(`KILLS: ${score}`, 220, 28);
+                    ctx.fillStyle = '#6366f1';
+                    ctx.fillText(`WAVE: ${wave}`, 360, 28);
+
+                    const remaining = Math.max(0, waveTotal - waveSpawned + enemies.length);
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fillText(`ENEMIES: ${enemies.length}`, 480, 28);
+
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = "11px 'Share Tech Mono'";
+                    ctx.fillText('WASD + CLICK TO SHOOT', canvas.width - 200, 28);
+
+                    if (betweenWaves) {
+                        ctx.fillStyle = 'rgba(6,8,15,0.7)';
+                        ctx.fillRect(0, canvas.height/2 - 40, canvas.width, 80);
+                        ctx.fillStyle = '#6366f1';
+                        ctx.font = "bold 28px 'Syne', sans-serif";
+                        ctx.textAlign = 'center';
+                        ctx.fillText(`WAVE ${wave} INCOMING`, canvas.width/2, canvas.height/2 + 10);
+                        ctx.textAlign = 'left';
+                    }
+                }
+
+                let spawnInterval = null;
+                function startWave() {
+                    waveSpawned = 0;
+                    waveTotal = 6 + wave * 3;
+                    betweenWaves = false;
+                    const rate = Math.max(400, 1400 - wave * 100);
+                    spawnInterval = setInterval(() => {
+                        if (!running) { clearInterval(spawnInterval); return; }
+                        if (waveSpawned < waveTotal) spawnEnemy();
+                    }, rate);
+                }
+
+                function checkWaveComplete() {
+                    if (!betweenWaves && waveSpawned >= waveTotal && enemies.length === 0) {
+                        betweenWaves = true;
+                        betweenTimer = 120;
+                        clearInterval(spawnInterval);
+                        wave++;
+                        player.hp = Math.min(player.maxHp, player.hp + 30);
+                    }
+                }
+
+                startWave();
+
+                function loop() {
+                    if (!running) return;
+                    frameCount++;
+
+                    // Between wave countdown
+                    if (betweenWaves) {
+                        betweenTimer--;
+                        if (betweenTimer <= 0) startWave();
+                    }
+
+                    // Player movement
+                    if (keys['KeyW'] || keys['ArrowUp'])    player.y = Math.max(player.r, player.y - player.speed);
+                    if (keys['KeyS'] || keys['ArrowDown'])  player.y = Math.min(canvas.height - player.r, player.y + player.speed);
+                    if (keys['KeyA'] || keys['ArrowLeft'])  player.x = Math.max(player.r, player.x - player.speed);
+                    if (keys['KeyD'] || keys['ArrowRight']) player.x = Math.min(canvas.width - player.r, player.x + player.speed);
+                    if (keys['Space']) shoot();
+                    if (player.fireCooldown > 0) player.fireCooldown--;
+                    if (player.invincible > 0) player.invincible--;
+
+                    // Move bullets
+                    bullets.forEach(b => { b.x += b.vx; b.y += b.vy; b.life--; });
+                    bullets = bullets.filter(b => b.life > 0 && b.x > -10 && b.x < canvas.width+10 && b.y > -10 && b.y < canvas.height+10);
+
+                    // Move enemies
+                    enemies.forEach(en => {
+                        const a = Math.atan2(player.y - en.y, player.x - en.x);
+                        en.x += Math.cos(a) * en.speed;
+                        en.y += Math.sin(a) * en.speed;
+                    });
+
+                    // Bullet vs enemy
+                    bullets.forEach((b, bi) => {
+                        enemies.forEach((en, ei) => {
+                            if (Math.hypot(b.x - en.x, b.y - en.y) < b.r + en.r) {
+                                bullets.splice(bi, 1);
+                                en.hp--;
+                                spawnParticles(en.x, en.y, en.color, 5);
+                                if (en.hp <= 0) {
+                                    spawnParticles(en.x, en.y, en.color, 18);
+                                    score += en.score;
+                                    enemies.splice(ei, 1);
+                                }
+                            }
+                        });
+                    });
+
+                    // Enemy vs player
+                    if (player.invincible <= 0) {
+                        enemies.forEach(en => {
+                            if (Math.hypot(player.x - en.x, player.y - en.y) < player.r + en.r) {
+                                player.hp -= 0.5;
+                                player.invincible = 20;
+                            }
+                        });
+                    }
+
+                    // Move particles
+                    particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life--; p.vx *= 0.92; p.vy *= 0.92; });
+                    particles = particles.filter(p => p.life > 0);
+
+                    checkWaveComplete();
+
+                    if (player.hp <= 0) {
+                        running = false;
+                        cleanup();
+                        clearInterval(spawnInterval);
+                        onGameOver(score);
+                        return;
+                    }
+
+                    drawBg();
+                    drawParticles();
+                    drawBullets();
+                    drawEnemies();
+                    drawPlayer();
+                    drawHUD();
+                    requestAnimationFrame(loop);
+                }
+                loop();
+            }
+        },
+
+    };
+    </script>
+
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        let totalXP = parseInt(localStorage.getItem('lvl_x')) || 0;
+        let vCode = "";
+
+        function initPortal() {
+            canvas.width = 820;
+            canvas.height = 510;
+            const savedUser = localStorage.getItem('lvl_u');
+            if (savedUser) {
+                const accounts = JSON.parse(localStorage.getItem('lvl_accounts') || '{}');
+                const account = accounts[savedUser.toLowerCase()];
+                totalXP = (account ? account.xp : parseInt(localStorage.getItem('lvl_x'))) || 0;
+                document.getElementById('authOverlay').style.display = 'none';
+            } else {
+                showAuthTab('login');
+            }
+            updateXPDisplay();
+        }
+
+        function updateXPDisplay() {
+            document.getElementById('xp-counter').innerText = totalXP;
+            document.getElementById('xp-pill').innerText = totalXP;
+            const fill = Math.min((totalXP % 1000) / 10, 100);
+            document.getElementById('xp-fill').style.width = fill + '%';
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2800);
+        }
+
+        function switchTab(type) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(type === 'arcade') {
+                document.getElementById('tab-arcade').classList.add('active');
+                document.getElementById('arcade-view').style.display = 'block';
+                document.getElementById('media-view').style.display = 'none';
+                document.getElementById('active-title').innerText = 'ARCADE';
+            } else {
+                document.getElementById('tab-media').classList.add('active');
+                document.getElementById('arcade-view').style.display = 'none';
+                document.getElementById('media-view').style.display = 'block';
+                document.getElementById('active-title').innerText = 'MEDIA PLAYER';
+            }
+        }
+
+        function setTrack(videoId, el) {
+            document.querySelectorAll('.track-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('yt-player').src = 'https://www.youtube.com/embed/' + videoId;
+        }
+
+        async function startSignup() {
+            const name = document.getElementById('reg-user').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+            const pass2 = document.getElementById('reg-pass2').value;
+            const err = document.getElementById('signup-error');
+
+            err.style.display = 'none';
+
+            if (!name || !email || !pass || !pass2) {
+                err.innerText = 'All fields are required.'; err.style.display = 'block'; return;
+            }
+            if (pass !== pass2) {
+                err.innerText = 'Passwords do not match.'; err.style.display = 'block'; return;
+            }
+            if (pass.length < 6) {
+                err.innerText = 'Password must be at least 6 characters.'; err.style.display = 'block'; return;
+            }
+            const accounts = JSON.parse(localStorage.getItem('lvl_accounts') || '{}');
+            if (accounts[name.toLowerCase()]) {
+                err.innerText = 'That Gamer Tag is already taken.'; err.style.display = 'block'; return;
+            }
+
+            vCode = Math.random().toString(16).substr(2, 6).toUpperCase();
+            try {
+                emailjs.init("jrgaySZUJkXugz5TV");
+                await emailjs.send("service_xq0s2uh", "template_lm6dcze", { to_name: name, to_email: email, code: vCode });
+            } catch(e) { console.log("Email fallback."); }
+
+            document.getElementById('temp-code').innerText = vCode;
+            document.getElementById('signup-step1').style.display = 'none';
+            document.getElementById('signup-step2').style.display = 'block';
+        }
+
+        function finalizeSignup() {
+            const entered = document.getElementById('v-input').value.trim().toUpperCase();
+            const verifyErr = document.getElementById('verify-error');
+            verifyErr.style.display = 'none';
+
+            if (entered !== vCode) {
+                verifyErr.innerText = 'Incorrect code. Try again.';
+                verifyErr.style.display = 'block';
+                document.getElementById('v-input').style.borderColor = 'var(--danger)';
+                return;
+            }
+
+            const name = document.getElementById('reg-user').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+            const accounts = JSON.parse(localStorage.getItem('lvl_accounts') || '{}');
+            accounts[name.toLowerCase()] = { username: name, password: pass, xp: 0 };
+            localStorage.setItem('lvl_accounts', JSON.stringify(accounts));
+            localStorage.setItem('lvl_u', name);
+            localStorage.setItem('lvl_x', 0);
+            totalXP = 0;
+            document.getElementById('authOverlay').style.display = 'none';
+            updateXPDisplay();
+            showToast('✓ Account created — Welcome, ' + name + '!');
+        }
+
+        function doLogin() {
+            const name = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value;
+            const err = document.getElementById('login-error');
+            err.style.display = 'none';
+
+            if (!name || !pass) {
+                err.innerText = 'Enter your Gamer Tag and password.'; err.style.display = 'block'; return;
+            }
+
+            const accounts = JSON.parse(localStorage.getItem('lvl_accounts') || '{}');
+            const account = accounts[name.toLowerCase()];
+
+            if (!account) {
+                err.innerText = 'No account found with that Gamer Tag.'; err.style.display = 'block'; return;
+            }
+            if (account.password !== pass) {
+                err.innerText = 'Incorrect password.'; err.style.display = 'block'; return;
+            }
+
+            localStorage.setItem('lvl_u', account.username);
+            totalXP = account.xp || 0;
+            localStorage.setItem('lvl_x', totalXP);
+            document.getElementById('authOverlay').style.display = 'none';
+            updateXPDisplay();
+            showToast('✓ Welcome back, ' + account.username + '!');
+        }
+
+        function showAuthTab(tab) {
+            const isLogin = tab === 'login';
+            document.getElementById('login-panel').style.display = isLogin ? 'block' : 'none';
+            document.getElementById('signup-panel').style.display = isLogin ? 'none' : 'block';
+            document.getElementById('signup-step1').style.display = 'block';
+            document.getElementById('signup-step2').style.display = 'none';
+            document.getElementById('login-error').style.display = 'none';
+            document.getElementById('signup-error').style.display = 'none';
+            document.getElementById('tab-login-btn').style.background = isLogin ? 'var(--brand)' : 'transparent';
+            document.getElementById('tab-login-btn').style.color = isLogin ? 'white' : 'var(--text-muted)';
+            document.getElementById('tab-login-btn').style.borderColor = isLogin ? 'var(--border2)' : 'var(--border)';
+            document.getElementById('tab-signup-btn').style.background = isLogin ? 'transparent' : 'var(--brand)';
+            document.getElementById('tab-signup-btn').style.color = isLogin ? 'var(--text-muted)' : 'white';
+            document.getElementById('tab-signup-btn').style.borderColor = isLogin ? 'var(--border)' : 'var(--border2)';
+        }
+
+        function loadGameFromLib(key) {
+            const game = GamesLib[key];
+            const gameUI = document.getElementById('game-ui');
+            gameUI.style.display = 'none';
+            document.getElementById('active-title').innerText = game.title;
+
+            // Clear any old remote frame
+            const old = document.getElementById('remote-game-frame');
+            if(old) old.remove();
+            const oldBtn = document.getElementById('exit-btn');
+            if(oldBtn) oldBtn.remove();
+
+            if (game.type === "remote") {
+                const wrapper = document.getElementById('canvas-wrapper');
+                const frame = document.createElement('iframe');
+                frame.id = "remote-game-frame";
+                frame.src = game.url;
+                frame.style.cssText = "position:absolute;inset:0;width:100%;height:100%;border:none;z-index:50;";
+                wrapper.appendChild(frame);
+
+                const closeBtn = document.createElement('button');
+                closeBtn.id = "exit-btn";
+                closeBtn.innerText = "✕ EXIT";
+                closeBtn.style.cssText = "position:absolute;top:12px;right:12px;padding:8px 16px;background:var(--danger);color:white;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;z-index:200;";
+                closeBtn.onclick = () => location.reload();
+                wrapper.appendChild(closeBtn);
+            } else {
+                game.init(canvas, ctx, (score) => {
+                    const earned = score * game.xpMultiplier;
+                    totalXP += earned;
+                    localStorage.setItem('lvl_x', totalXP);
+                    const savedUser = localStorage.getItem('lvl_u');
+                    if (savedUser) {
+                        const accounts = JSON.parse(localStorage.getItem('lvl_accounts') || '{}');
+                        if (accounts[savedUser.toLowerCase()]) {
+                            accounts[savedUser.toLowerCase()].xp = totalXP;
+                            localStorage.setItem('lvl_accounts', JSON.stringify(accounts));
+                        }
+                    }
+                    updateXPDisplay();
+                    showToast(`+${earned} XP secured`);
+                    gameUI.style.display = 'flex';
+                    gameUI.innerHTML = `
+                        <div class="overlay-title">Session Terminated</div>
+                        <div class="overlay-headline" style="color:var(--danger);-webkit-text-fill-color:var(--danger);">GAME OVER</div>
+                        <p style="font-size:20px;margin-bottom:8px;font-family:'Share Tech Mono',monospace;color:var(--success);">+${earned} XP SECURED</p>
+                        <p style="font-size:13px;color:var(--text-muted);margin-bottom:28px;">Total: ${totalXP} XP</p>
+                        <button class="btn-game btn-game-core" onclick="location.reload()">↺ Return to Menu</button>
+                    `;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
